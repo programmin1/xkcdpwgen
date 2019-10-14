@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+#Consistency if run in python2:
+from __future__ import division
 
 import random, math
 
@@ -14,7 +16,7 @@ def makebylen():
     for w in readwords("/usr/share/dict/american-english"):
         w = normalform(w)
         l = len(w)
-        if not bylen.has_key(l):
+        if not l in bylen:
             bylen[l] = dict()
         bylen[l][w] = 1
     return bylen
@@ -29,7 +31,7 @@ def password(words, nwords, maxwordlen):
 def bits(n):
     bits = 0
     while n > 1:
-        n = n/2
+        n = int(n/2)
         bits += 1
     return bits
 
@@ -38,12 +40,14 @@ def passwords(bylen, bitsentropy, count):
     words = list()
 
     maxwordlen = 11
-    for wordlen in xrange(3, maxwordlen+1):
+    for wordlen in range(3, maxwordlen+1):
         words.extend(bylen[wordlen].keys())
     wordbits = bits(len(words))
-    nwords = math.ceil(float(bitsentropy) / float(wordbits))
-    print "Final wordlist contains", len(words), "words.  Picking", nwords, "words provides at least", wordbits*nwords, "bits of entropy."
-    for x in xrange(0, count):
+    nwords = math.ceil(bitsentropy / wordbits)
+    print("Final wordlist contains %s words.  Picking %s words provides at least %s bits of entropy." % 
+       (len(words), nwords, wordbits*nwords)
+    ) 
+    for x in range(0, count):
         result.append(password(words, nwords, maxwordlen))
     return result
 
@@ -80,6 +84,6 @@ It defaults to 44 bits of entropy as per the cartoon.
 
     bl = makebylen()
     for pw in passwords(bl, options.bitsentropy, options.numtogen):
-        print pw
+        print(pw)
 
 
